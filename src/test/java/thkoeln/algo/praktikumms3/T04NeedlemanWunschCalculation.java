@@ -23,6 +23,7 @@ public class T04NeedlemanWunschCalculation {
 
         // When
         Alignment alignment = new Alignment(S1, S2);
+        alignment = NeedlemanWunsch.initialize(alignment);
         alignment = NeedlemanWunsch.calculate(alignment);
         int[][] calculatedScoreMatrix = alignment.getScoreMatrix();
 
@@ -81,6 +82,7 @@ public class T04NeedlemanWunschCalculation {
 
         // When
         Alignment alignment = new Alignment(S1, S2);
+        alignment = NeedlemanWunsch.initialize(alignment);
         alignment = NeedlemanWunsch.calculate(alignment);
         int[][] calculatedScoreMatrix = alignment.getScoreMatrix();
 
@@ -120,6 +122,7 @@ public class T04NeedlemanWunschCalculation {
 
         // When
         Alignment alignment = new Alignment(S1, S2, scores);
+        alignment = NeedlemanWunsch.initialize(alignment);
         alignment = NeedlemanWunsch.calculate(alignment);
         int[][] calculatedScoreMatrix = alignment.getScoreMatrix();
 

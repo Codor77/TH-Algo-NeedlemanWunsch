@@ -21,11 +21,15 @@ public class Scores {
      *
      */
     public Scores() {
-        throw new UnsupportedOperationException();
+        MATCH = NEEDLEMANWUNSCH_DEFAULT_MATCH_SCORE;
+        MISMATCH = NEEDLEMANWUNSCH_DEFAULT_MISMATCH_SCORE;
+        GAP = NEEDLEMANWUNSCH_DEFAULT_GAP_PENALTY;
     }
 
     public Scores(int MATCH, int MISMATCH, int GAP) {
-        throw new UnsupportedOperationException();
+        this.MATCH = MATCH;
+        this.MISMATCH = MISMATCH;
+        this.GAP = GAP;
     }
 
     /***
@@ -36,7 +40,10 @@ public class Scores {
      * @return MATCH oder MISMATCH Score
      */
     public int equal(char a, char b) {
-        throw new UnsupportedOperationException();
+        if (a == b)
+            return MATCH;
+        else
+            return MISMATCH;
     }
 
     /***
@@ -48,6 +55,11 @@ public class Scores {
      * @return MATCH, MISMATCH oder GAP Score
      */
     public int weight(char a, char b, char GAP_CHAR) {
-        throw new UnsupportedOperationException();
+        if (a == b)
+            return MATCH;
+        else if (a == GAP_CHAR || b == GAP_CHAR)
+            return GAP;
+        else
+            return MISMATCH;
     }
 }

@@ -102,22 +102,29 @@ public class Alignment {
      * Constructors
      */
     public Alignment() {
-        throw new UnsupportedOperationException();
+        X_Sequence = "";
+        Y_Sequence = "";
+        scores = new Scores();
+        X_Alignment = "";
+        Y_Alignment = "";
+        operationsString = "";
+        scoreMatrix = new int[0][0];
     }
 
     public Alignment(String X_Sequence, String Y_Sequence) {
         this();
-        throw new UnsupportedOperationException();
+        setX_Sequence(X_Sequence);
+        setY_Sequence(Y_Sequence);
     }
 
     public Alignment(String X_Sequence, String Y_Sequence, Scores scores) {
         this(X_Sequence, Y_Sequence);
-        throw new UnsupportedOperationException();
+        setScoreSettings(scores);
     }
 
     public Alignment(String X_Sequence, String Y_Sequence, Scores scores, char GAP_CHAR) {
         this(X_Sequence, Y_Sequence, scores);
-        throw new UnsupportedOperationException();
+        setGapCharacter(GAP_CHAR);
     }
     /** end Constructors */
 
@@ -130,14 +137,14 @@ public class Alignment {
 
     public void setX_Sequence(String x_Sequence) {
         X_Sequence = x_Sequence;
+        setScoreMatrix(new int[X_Sequence.length()+1][Y_Sequence.length()+1]);
     }
 
-    public String getY_Sequence() {
-        return Y_Sequence;
-    }
+    public String getY_Sequence() { return Y_Sequence; }
 
     public void setY_Sequence(String y_Sequence) {
         Y_Sequence = y_Sequence;
+        setScoreMatrix(new int[X_Sequence.length()+1][Y_Sequence.length()+1]);
     }
 
     public Scores getScoreSettings() {
@@ -215,7 +222,7 @@ public class Alignment {
     public int getScore() {
         // Wo sieht man den Score in der Matrix?
         // Wie wie setzt sich der Score zusammen?
-        throw new UnsupportedOperationException();
+        return scoreMatrix[X_Sequence.length()][Y_Sequence.length()];
     }
 
     /**

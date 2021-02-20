@@ -48,18 +48,15 @@ public class NeedlemanWunsch {
     }
 
     public static Alignment align(String S1, String S2) {
-        throw new UnsupportedOperationException();
-        return align(alignment);
+        return align(new Alignment(S1,S2));
     }
 
     public static Alignment align(String S1, String S2, Scores scores) {
-        throw new UnsupportedOperationException();
-        return align(alignment);
+        return align(new Alignment(S1,S2,scores));
     }
 
     private static Alignment align(String S1, String S2, Scores scores, char GAP_CHAR) {
-        throw new UnsupportedOperationException();
-        return align(alignment);
+        return align(new Alignment(S1,S2,scores,GAP_CHAR));
     }
 
 
@@ -81,7 +78,15 @@ public class NeedlemanWunsch {
      *          - Alignment isInitialized() --> true
      */
     public static Alignment initialize(Alignment alignment) {
-        throw new UnsupportedOperationException();
+        int[][] initializedMatrix = alignment.getScoreMatrix();
+
+        for(int x = 0; x <= initializedMatrix.length -1; x++)
+            initializedMatrix[x][0] = x * alignment.getScoreSettings().GAP;
+        for(int y = 0; y <= initializedMatrix[0].length -1; y++)
+            initializedMatrix[0][y] = y * alignment.getScoreSettings().GAP;
+
+        alignment.setScoreMatrix(initializedMatrix);
+        return alignment;
     }
 
 
@@ -102,7 +107,23 @@ public class NeedlemanWunsch {
      *          - Alignment isCalculated() --> true
      */
     public static Alignment calculate(Alignment alignment) {
-        throw new UnsupportedOperationException();
+        int[][] calculatedMatrix = alignment.getScoreMatrix();
+
+        for (int x = 1; x <= alignment.getX_Sequence().length(); x++) {
+            for (int y = 1; y <= alignment.getY_Sequence().length(); y++) {
+                int matchScore = alignment.getScoreSettings().MISMATCH;
+                if (alignment.getX_Sequence().charAt(x-1) == alignment.getY_Sequence().charAt(y-1))
+                    matchScore = alignment.getScoreSettings().MATCH;
+
+                int match = calculatedMatrix[x-1][y-1] + matchScore;
+                int deletion = calculatedMatrix[x-1][y] + alignment.getScoreSettings().GAP;
+                int insertion = calculatedMatrix[x][y-1] + alignment.getScoreSettings().GAP;
+
+                calculatedMatrix[x][y] = Math.max(match,Math.max(deletion,insertion));
+            }
+        }
+
+        alignment.setScoreMatrix(calculatedMatrix);
         return alignment;
     }
 
@@ -128,8 +149,89 @@ public class NeedlemanWunsch {
      *              - GAP       -->  '_'
      */
     private static Alignment reconstruct(Alignment alignment) {
-        throw new UnsupportedOperationException();
+        int[][] scoreMatrix = alignment.getScoreMatrix();
+
+        String X_Sequence = alignment.getX_Sequence();
+        String Y_Sequence = alignment.getY_Sequence();
+
+        StringBuffer X_AlignmentBuffer = new StringBuffer();
+        StringBuffer OperationsBuffer = new StringBuffer();
+        StringBuffer Y_AlignmentBuffer = new StringBuffer();
+
+        char gap_char = alignment.getGapCharacter();
+
+        int x = scoreMatrix.length -1;
+        int y = scoreMatrix[0].length -1;
+
+        while (x > 0 && y > 0){
+
+            int score = scoreMatrix[x][y];
+            int matchScore = scoreMatrix[x - 1][y - 1];
+            int deletionScore = scoreMatrix[x - 1][y];
+            int insertionScore = scoreMatrix[x][y - 1];
+
+            boolean matchBool = false;
+
+            if (score == matchScore + alignment.getScoreSettings().MISMATCH || score == matchScore + alignment.getScoreSettings().MATCH) {
+                boolean match = X_Sequence.charAt(x - 1) == Y_Sequence.charAt(y - 1);
+                if (match)
+                    matchBool = true;
+            } else
+                matchScore = Integer.MIN_VALUE;
+
+            if (score != deletionScore + alignment.getScoreSettings().GAP) {
+                deletionScore = Integer.MIN_VALUE;
+            }
+            if (score != insertionScore + alignment.getScoreSettings().GAP) {
+                insertionScore = Integer.MIN_VALUE;
+            }
+
+            if (matchBool) {
+                X_AlignmentBuffer.append(X_Sequence.charAt(x-1));
+                OperationsBuffer.append('*');
+                Y_AlignmentBuffer.append(Y_Sequence.charAt(y-1));
+                x--;
+                y--;
+            }
+            else {
+                int prevScore = Math.max(matchScore, Math.max(deletionScore, insertionScore));
+                if (prevScore == matchScore) {
+                    X_AlignmentBuffer.append(X_Sequence.charAt(x - 1));
+                    OperationsBuffer.append('|');
+                    Y_AlignmentBuffer.append(Y_Sequence.charAt(y - 1));
+                    x--;
+                    y--;
+                } else if (prevScore == deletionScore) {
+                    X_AlignmentBuffer.append(X_Sequence.charAt(x - 1));
+                    OperationsBuffer.append('_');
+                    Y_AlignmentBuffer.append(gap_char);
+                    x--;
+                } else if (prevScore == insertionScore) {
+                    X_AlignmentBuffer.append(gap_char);
+                    OperationsBuffer.append('_');
+                    Y_AlignmentBuffer.append(Y_Sequence.charAt(y - 1));
+                    y--;
+                }
+            }
+        }
+        while ( x > 0 || y > 0){
+            if ( x == 0 ){
+                X_AlignmentBuffer.append(gap_char);
+                OperationsBuffer.append('_');
+                Y_AlignmentBuffer.append(Y_Sequence.charAt(y - 1));
+                y--;
+            }
+            else {
+                X_AlignmentBuffer.append(X_Sequence.charAt(x - 1));
+                OperationsBuffer.append('_');
+                Y_AlignmentBuffer.append(gap_char);
+                x--;
+            }
+        }
+        
+        alignment.setX_Alignment(X_AlignmentBuffer.reverse().toString());
+        alignment.setOperationsString(OperationsBuffer.reverse().toString());
+        alignment.setY_Alignment(Y_AlignmentBuffer.reverse().toString());
         return alignment;
     }
-
 }
