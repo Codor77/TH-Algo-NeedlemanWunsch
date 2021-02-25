@@ -86,6 +86,7 @@ public class NeedlemanWunsch {
             initializedMatrix[0][y] = y * alignment.getScoreSettings().GAP;
 
         alignment.setScoreMatrix(initializedMatrix);
+        alignment.setInitialized(true);
         return alignment;
     }
 
@@ -107,6 +108,9 @@ public class NeedlemanWunsch {
      *          - Alignment isCalculated() --> true
      */
     public static Alignment calculate(Alignment alignment) {
+        if (!alignment.isInitialized())
+            alignment = initialize(alignment);
+
         int[][] calculatedMatrix = alignment.getScoreMatrix();
 
         for (int x = 1; x <= alignment.getX_Sequence().length(); x++) {
@@ -124,6 +128,7 @@ public class NeedlemanWunsch {
         }
 
         alignment.setScoreMatrix(calculatedMatrix);
+        alignment.setCalculated(true);
         return alignment;
     }
 
@@ -149,6 +154,9 @@ public class NeedlemanWunsch {
      *              - GAP       -->  '_'
      */
     private static Alignment reconstruct(Alignment alignment) {
+        if (!alignment.isCalculated())
+            alignment = calculate(alignment);
+
         int[][] scoreMatrix = alignment.getScoreMatrix();
 
         String X_Sequence = alignment.getX_Sequence();
@@ -232,6 +240,7 @@ public class NeedlemanWunsch {
         alignment.setX_Alignment(X_AlignmentBuffer.reverse().toString());
         alignment.setOperationsString(OperationsBuffer.reverse().toString());
         alignment.setY_Alignment(Y_AlignmentBuffer.reverse().toString());
+        alignment.setReconstructed(true);
         return alignment;
     }
 }
